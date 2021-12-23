@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface.Colors;
 using ImGuiNET;
-using ImGuiScene;
 using RaidBuffTracker.Tracker;
 using RaidBuffTracker.Tracker.Library;
 
@@ -11,15 +11,46 @@ namespace RaidBuffTracker.UI
 {
     public sealed class TrackerWidget : IDisposable
     {
-        private readonly IStatusTracker _tracker;
-        private readonly StatusLibrary  _statusLibrary;
-        private readonly IconManager    _iconManager;
+        public  bool    isLocked = true;
 
-        public TrackerWidget(IStatusTracker tracker, StatusLibrary statusLibrary, IconManager iconManager)
+        private Vector2 _minSize = new(170, 200);
+
+        private readonly ActionLibrary _actionLibrary;
+        private readonly IconManager   _iconManager;
+        private readonly Configuration _configuration;
+        private readonly Condition     _condition;
+
+        private IActionTracker? _tracker;
+
+        private Vector4 _activeColor = new(0.8f, 0.5f, 0.5f, 1f);
+        private Vector4 _activeFrame = new(1f, 0f, 0f, 1f);
+
+        private Vector4 _readyColor = new(0.8f, 0.8f, 0.8f, 1f);
+        private Vector4 _readyFrame = new(0.8f, 0.8f, 0.8f, 1f);
+
+        private Vector4 _cooldownColor = new(0.3f, 0.3f, 0.3f, 1f);
+        private Vector4 _cooldownFrame = new(0.3f, 0.3f, 0.3f, 1f);
+
+        private Vector4 _shadowColor  = new(0f, 0f, 0f, 1f);
+        private float   _shadowOffset = 10f;
+
+        private Vector2 _cellPadding = new(15, 25);
+        private Vector2 _jobIconSize = new(40, 40);
+
+        private ImGuiWindowFlags _unlockedFlags = ImGuiWindowFlags.None;
+        private ImGuiWindowFlags _lockedFlags   = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoBackground;
+
+        public TrackerWidget(ActionLibrary actionLibrary, IconManager iconManager, Condition condition, Configuration configuration)
+        {
+            _actionLibrary = actionLibrary;
+            _iconManager = iconManager;
+            _condition = condition;
+            _configuration = configuration;
+        }
+
+        public void SetTracker(IActionTracker tracker)
         {
             _tracker = tracker;
-            _statusLibrary = statusLibrary;
-            _iconManager = iconManager;
         }
 
         public void Dispose()
@@ -28,70 +59,155 @@ namespace RaidBuffTracker.UI
 
         public void Draw()
         {
-            ImGui.SetNextWindowSize(new Vector2(375, 330), ImGuiCond.FirstUseEver);
-            ImGui.SetNextWindowSizeConstraints(new Vector2(375, 330), new Vector2(float.MaxValue, float.MaxValue));
-            if (ImGui.Begin("Test"))
+            if (_configuration.OnlyInInstances && !_condition[ConditionFlag.BoundByDuty])
             {
-                var size = new Vector2(250, 250);
-                var position = Vector2.Zero;
+                return;
+            }
 
-                foreach (var track in _tracker.EnumerateTracks())
+            if (_tracker?.AnyTracks() != true)
+            {
+                return;
+            }
+
+            var currentPosition = new Vector2(_cellPadding.X, _cellPadding.Y + 25);
+
+            var lockedFlags = _lockedFlags;
+            if (!_configuration.WidgetInteraction)
+            {
+                lockedFlags |= ImGuiWindowFlags.NoMouseInputs;
+            }
+
+            ImGui.SetNextWindowSize(_configuration.WidgetPosition);
+            ImGui.SetNextWindowSize(_configuration.WidgetSize);
+            ImGui.SetNextWindowSizeConstraints(_minSize, new Vector2(float.MaxValue, float.MaxValue));
+            if (ImGui.Begin("RaidBuffTracker widget", isLocked ? lockedFlags : _unlockedFlags))
+            {
+                var cellSize = _configuration.WidgetCellSize;
+
+                var sortedTracks = _tracker.EnumerateTracks().ToList();
+                sortedTracks.Sort((a, b) =>
                 {
-                    var icon = _iconManager.GetIcon(track.record);
-                    var iconTint = ImGuiColors.DalamudWhite;
-                    var cooldownText = "";
+                    return a.record.category.CompareTo(b.record.category);
+                });
 
-                    if (track.IsActive)
-                    {
-                        cooldownText = "" + (int)track.DurationRemaining;
-                        iconTint = ImGuiColors.DalamudRed;
-                    }
-                    else if (track.IsReady)
-                    {
-                        cooldownText = "" + 0;
-                        iconTint = ImGuiColors.DalamudWhite;
-                    }
-                    else
-                    {
-                        cooldownText = "" + (int)track.CooldownRemaining;
-                        iconTint = ImGuiColors.DalamudGrey3;
-                    }
-
-                    ImGui.SetCursorPos(position);
-                    ImGui.Image(icon.ImGuiHandle, size, Vector2.Zero, Vector2.One, iconTint);
-
-                    ImGui.SetCursorPos(position + size / 2);
-                    ImGui.Text(cooldownText);
-
-                    if (position.X + size.X * 2 > ImGui.GetWindowWidth())
-                    {
-                        position.X = 0;
-                        position.Y += size.Y;
-                    }
-                    else
-                    {
-                        position.X += size.X;
-                    }
-                    /*
-                    ImGui.Text($"{track.source.name} - {track.record.id}");
-                    ImGui.SameLine();
-                    if (track.IsActive)
-                    {
-                        ImGui.Text($"Active ({track.DurationRemaining}");
-                    }
-                    else if (track.IsReady)
-                    {
-                        ImGui.Text($"Ready");
-                    }
-                    else
-                    {
-                        ImGui.Text($"CD {track.CooldownRemaining}");
-                    }
-                    */
+                ActionCategory? lastCategory = null;
+                if (_configuration.WidgetReverseOrder)
+                {
+                    sortedTracks.Reverse();
+                    lastCategory = ActionCategory.Utility;
                 }
 
+                foreach (var track in sortedTracks)
+                {
+                    if (_configuration.EnabledActions?.Contains(track.record.name) == false)
+                    {
+                        continue;
+                    }
+
+                    if (_configuration.WidgetSplitIntoCategories && lastCategory != null && lastCategory != track.record.category)
+                    {
+                        currentPosition.X = _cellPadding.X;
+                        currentPosition.Y += cellSize.Y + _cellPadding.Y;
+                    }
+
+                    lastCategory = track.record.category;
+
+                    var recordIcon = _iconManager.GetRecordIcon(track.record);
+                    var jobIcon = _iconManager.GetJobIcon(track.source.jobId);
+
+                    var recordIconTint = ImGuiColors.DalamudWhite;
+                    var recordIconFrame = ImGuiColors.DalamudWhite;
+                    var text = "";
+                    var textColor = ImGuiColors.DalamudWhite;
+
+                    if (track.IsActive)
+                    {
+                        text = "" + (int)Math.Round(track.DurationRemaining);
+                        textColor = ImGuiColors.DalamudRed;
+                        recordIconTint = _activeColor;
+                        recordIconFrame = _activeFrame;
+                    }
+                    else if (track.IsReady)
+                    {
+                        text = "R";
+                        textColor = ImGuiColors.HealerGreen;
+                        recordIconTint = _readyColor;
+                        recordIconFrame = _readyFrame;
+                    }
+                    else
+                    {
+                        text = "" + (int)Math.Round(track.CooldownRemaining);
+                        textColor = ImGuiColors.TankBlue;
+                        recordIconTint = _cooldownColor;
+                        recordIconFrame = _cooldownFrame;
+                    }
+
+                    ImGui.SetCursorPos(currentPosition);
+                    ImGui.Image(recordIcon.ImGuiHandle, cellSize, Vector2.Zero, Vector2.One, recordIconTint, recordIconFrame);
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.SetTooltip(track.record.name + "\n" + track.source.name + " - " + track.record.category + "\n" + track.record.tooltip);
+                    }
+
+                    var indexString = track.source.index.ToString();
+                    var bottomPartTextSize = new Vector2(_jobIconSize.X - 15, _jobIconSize.Y - 10);
+                    var bottomPartSize = new Vector2(_jobIconSize.X + bottomPartTextSize.X, _jobIconSize.Y);
+
+                    ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
+                    ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
+
+                    var bottomPartTextPosition = currentPosition + new Vector2(
+                                                     cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
+                                                     cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
+
+                    ImGui.SetCursorPos(bottomPartTextPosition);
+                    ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
+                    ImGui.Button("", bottomPartTextSize);
+                    ImGui.PopStyleColor(3);
+
+                    ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, -3));
+                    ImGui.TextColored(new Vector4(0, 0, 0, 1), indexString);
+
+                    ImGui.SetWindowFontScale(1.5f);
+                    var textSize = ImGui.CalcTextSize(text);
+                    ImGui.SetCursorPos(currentPosition + cellSize / 2 - textSize / 2);
+                    DrawTextWithShadow(textColor, text, _shadowColor, _shadowOffset);
+
+                    if (currentPosition.X + cellSize.X * 2 + _cellPadding.X * 2 > ImGui.GetWindowWidth())
+                    {
+                        currentPosition.X = _cellPadding.X;
+                        currentPosition.Y += cellSize.Y + _cellPadding.Y;
+                    }
+                    else
+                    {
+                        currentPosition.X += cellSize.X + _cellPadding.X;
+                    }
+                }
+
+                _configuration.WidgetPosition = ImGui.GetWindowPos();
+                _configuration.WidgetSize = ImGui.GetWindowSize();
                 ImGui.End();
             }
+        }
+
+        private void DrawTextWithShadow(Vector4 textColor, string text, Vector4 shadowColor, float shadowOffset)
+        {
+            var currentPosition = ImGui.GetCursorPos();
+
+            for (var x = 0; x < shadowOffset; x += 3)
+            {
+                for (var y = 0; y < shadowOffset; y += 3)
+                {
+                    ImGui.SetCursorPos(currentPosition + new Vector2(x - shadowOffset / 2, y - shadowOffset / 2));
+                    ImGui.TextColored(shadowColor, text);
+                }
+            }
+
+            ImGui.SetCursorPos(currentPosition);
+            ImGui.TextColored(textColor, text);
+            ImGui.SetWindowFontScale(1f);
         }
     }
 }

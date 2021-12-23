@@ -21,9 +21,11 @@ using Dalamud.Plugin;
 using Ninject;
 using Ninject.Modules;
 using RaidBuffTracker.Tracker;
+using RaidBuffTracker.Tracker.Impl;
 using RaidBuffTracker.Tracker.Library;
 using RaidBuffTracker.Tracker.Source;
 using RaidBuffTracker.UI;
+using RaidBuffTracker.Utils;
 
 namespace RaidBuffTracker
 {
@@ -94,12 +96,15 @@ namespace RaidBuffTracker
             Bind<Configuration>().ToConstant(config).InScope(_ => _scope);
 
             BindSingleton<TrackerWidget>();
-            BindSingleton<StatusLibrary>();
+            BindSingleton<ActionLibrary>();
             BindSingleton<IconManager>();
+            BindSingleton<ConfigurationWindow>();
+            BindSingleton<PartyListHUD>();
 
-            BindSingleton<IStatusTrackerSource, ObjectTableStatusTrackerSource>();
-            BindSingleton<IStatusTracker, StatusTrackerImpl>();
-            // BindSingleton<IStatusTracker, MockStatusTrackerImpl>();
+            BindSingleton<IActionTrackerSource, NetworkActionTrackerSource>();
+
+            BindSingleton<IActionTracker, ActionTrackerImpl>(ActionTracker.regular);
+            BindSingleton<IActionTracker, MockActionTrackerImpl>(ActionTracker.testingDisplay);
         }
 
         private void BindDalamudService<T>(T instance)
@@ -112,9 +117,13 @@ namespace RaidBuffTracker
             Bind<T>().To<T>().InScope(_ => _scope);
         }
 
-        private void BindSingleton<TInterface, TImpl>() where TImpl: TInterface
+        private void BindSingleton<TInterface, TImpl>(string? name=null) where TImpl: TInterface
         {
-            Bind<TInterface>().To<TImpl>().InScope(_ => _scope);
+            var binding = Bind<TInterface>().To<TImpl>().InScope(_ => _scope);
+            if (name != null)
+            {
+                binding.Named(name);
+            }
         }
     }
 }

@@ -1,13 +1,13 @@
 {
-  "Author": "your name here",
-  "Name": "Sample Plugin",
-  "Punchline": "A short one-liner that shows up in /xlplugins.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "InternalName": "samplePlugin",
+  "Author": "shdwp",
+  "Name": "RaidBuffTracker",
+  "Punchline": "Keep track of your party raid buff cooldowns!",
+  "Description": "Adds a widget keeping track of your party actions cooldowns and state, this includes raid buffs, raid utility and other stuff you might be interested in. Plugin shows when they are active, and what their cooldown is at, helping you to align your burst windows.",
+  "InternalName": "RaidBuffTracker",
+  "DalamudApiLevel": 5,
   "ApplicableVersion": "any",
   "Tags": [
-    "sample",
-    "plugin",
-    "goats"
+    "ui",
+    "plugin"
   ]
 }

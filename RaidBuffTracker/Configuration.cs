@@ -1,29 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using Dalamud.Configuration;
-using Dalamud.Plugin;
 
 namespace RaidBuffTracker
 {
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 0;
+        public int Version { get; set; } = 1;
 
-        public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
+        public Vector2 WidgetPosition            { get; set; } = new(250, 250);
+        public Vector2 WidgetSize                { get; set; } = new(600, 300);
+        public Vector2 WidgetCellSize            { get; set; } = new(100, 100);
+        public bool    WidgetSplitIntoCategories { get; set; } = false;
+        public bool    WidgetReverseOrder        { get; set; } = false;
+        public bool    WidgetInteraction         { get; set; } = true;
 
-        // the below exist just to make saving less cumbersome
-
-        [NonSerialized]
-        private DalamudPluginInterface? pluginInterface;
-
-        public void Initialize(DalamudPluginInterface pluginInterface)
-        {
-            this.pluginInterface = pluginInterface;
-        }
-
-        public void Save()
-        {
-            this.pluginInterface!.SavePluginConfig(this);
-        }
+        public bool          OnlyInInstances { get; set; }
+        public List<string>? EnabledActions  { get; set; }
     }
 }
