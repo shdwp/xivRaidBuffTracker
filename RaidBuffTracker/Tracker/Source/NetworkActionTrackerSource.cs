@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Dalamud.Data;
@@ -43,7 +43,7 @@ namespace RaidBuffTracker.Tracker.Source
                 return;
             }
 
-            if (opcode is 0x35E or 0x301)
+            if (opcode is 0x35E or 0x301 or 0x2BA)
             {
 
                 ProcessAbilityPacket(dataptr, targetactorid);
