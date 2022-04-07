@@ -22,8 +22,8 @@ namespace RaidBuffTracker.UI
 
         private IActionTracker? _tracker;
 
-        private Vector4 _activeColor = new(0.8f, 0.5f, 0.5f, 1f);
-        private Vector4 _activeFrame = new(1f, 0f, 0f, 1f);
+        private Vector4 _activeColor = new(0.3f, 1f, 0.3f, 1f);
+        private Vector4 _activeFrame = new(0.3f, 1f, 0.3f, 1f);
 
         private Vector4 _readyColor = new(0.8f, 0.8f, 0.8f, 1f);
         private Vector4 _readyFrame = new(0.8f, 0.8f, 0.8f, 1f);
@@ -123,21 +123,20 @@ namespace RaidBuffTracker.UI
                     if (track.IsActive)
                     {
                         text = "" + (int)Math.Round(track.DurationRemaining);
-                        textColor = ImGuiColors.DalamudRed;
+                        textColor = ImGuiColors.HealerGreen;
                         recordIconTint = _activeColor;
                         recordIconFrame = _activeFrame;
                     }
                     else if (track.IsReady)
                     {
-                        text = "R";
-                        textColor = ImGuiColors.HealerGreen;
+                        text = "";
                         recordIconTint = _readyColor;
                         recordIconFrame = _readyFrame;
                     }
                     else
                     {
                         text = "" + (int)Math.Round(track.CooldownRemaining);
-                        textColor = ImGuiColors.TankBlue;
+                        textColor = ImGuiColors.DalamudRed;
                         recordIconTint = _cooldownColor;
                         recordIconFrame = _cooldownFrame;
                     }
@@ -153,24 +152,24 @@ namespace RaidBuffTracker.UI
                     var bottomPartTextSize = new Vector2(_jobIconSize.X - 15, _jobIconSize.Y - 10);
                     var bottomPartSize = new Vector2(_jobIconSize.X + bottomPartTextSize.X, _jobIconSize.Y);
 
-                    ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
-                    ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
+                    //ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
+                    //ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
 
-                    var bottomPartTextPosition = currentPosition + new Vector2(
-                                                     cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
-                                                     cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
+                    //var bottomPartTextPosition = currentPosition + new Vector2(
+                    //                                 cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
+                    //                                 cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
 
-                    ImGui.SetCursorPos(bottomPartTextPosition);
-                    ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
-                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
-                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
-                    ImGui.Button("", bottomPartTextSize);
-                    ImGui.PopStyleColor(3);
+                    //ImGui.SetCursorPos(bottomPartTextPosition);
+                    //ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
+                    //ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
+                    //ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
+                    //ImGui.Button("", bottomPartTextSize);
+                    //ImGui.PopStyleColor(3);
 
-                    ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, -3));
-                    ImGui.TextColored(new Vector4(0, 0, 0, 1), indexString);
+                    //ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, -3));
+                    //ImGui.TextColored(new Vector4(0, 0, 0, 1), indexString);
 
-                    ImGui.SetWindowFontScale(1.5f);
+                    ImGui.SetWindowFontScale(3f);
                     var textSize = ImGui.CalcTextSize(text);
                     ImGui.SetCursorPos(currentPosition + cellSize / 2 - textSize / 2);
                     DrawTextWithShadow(textColor, text, _shadowColor, _shadowOffset);
