@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors></Authors>
+    <Authors>shdwp, Iaotle</Authors>
     <Company></Company>
     <Version>1.0.0.1</Version>
-    <Description>A sample plugin.</Description>
+    <Description>Tracks Raid Buffs for you in a convenient widget.</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/shdwp/xivRaidBuffTracker</PackageProjectUrl>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
