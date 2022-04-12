@@ -7,7 +7,7 @@ namespace RaidBuffTracker
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public string Name => "Sample Plugin";
+        public string Name => "Raid Buff Tracker";
 
         private readonly App _app;
 

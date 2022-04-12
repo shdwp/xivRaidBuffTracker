@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Dalamud.Data;
@@ -28,7 +28,6 @@ namespace RaidBuffTracker.Tracker.Source
             _dataManager = dataManager;
             _objectTable = objectTable;
             _gameNetwork.NetworkMessage += OnNetworkMessage;
-
             _actionSheet = _dataManager.GameData.GetExcelSheet<Action>();
         }
 
@@ -44,8 +43,9 @@ namespace RaidBuffTracker.Tracker.Source
                 return;
             }
 
-            if (opcode == 0x1d0 || opcode == 0x2b0 || opcode == 0x2be || opcode == 0x288 || opcode == 0x238)
+            if (opcode is 0x35E or 0x301 or 0x2BA)
             {
+
                 ProcessAbilityPacket(dataptr, targetactorid);
             }
         }
@@ -54,7 +54,7 @@ namespace RaidBuffTracker.Tracker.Source
         {
             var actionId = (uint)Marshal.ReadInt32(dataPtr, 0x8);
 
-            if (false)
+            if (false) // if Debug
             {
                 var action = _actionSheet.GetRow(actionId);
                 var actor = _objectTable.FirstOrDefault(o => o.ObjectId == actorId);

@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors></Authors>
+    <Authors>shdwp, Iaotle</Authors>
     <Company></Company>
-    <Version>1.0.0.0</Version>
-    <Description>A sample plugin.</Description>
+    <Version>1.0.0.1</Version>
+    <Description>Tracks Raid Buffs for you in a convenient widget.</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/shdwp/xivRaidBuffTracker</PackageProjectUrl>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
     <Platforms>x64</Platforms>
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.2" />
+    <PackageReference Include="DalamudPackager" Version="2.1.5" />
     <PackageReference Include="Ninject" Version="4.0.0-beta-0134" />
     <Reference Include="FFXIVClientStructs">
       <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
