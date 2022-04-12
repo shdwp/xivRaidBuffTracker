@@ -152,22 +152,22 @@ namespace RaidBuffTracker.UI
                     var bottomPartTextSize = new Vector2(_jobIconSize.X - 15, _jobIconSize.Y - 10);
                     var bottomPartSize = new Vector2(_jobIconSize.X + bottomPartTextSize.X, _jobIconSize.Y);
 
-                    //ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
-                    //ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
+                    ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
+                    ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
 
-                    //var bottomPartTextPosition = currentPosition + new Vector2(
-                    //                                 cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
-                    //                                 cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
+                    var bottomPartTextPosition = currentPosition + new Vector2(
+                                                     cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
+                                                     cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
 
-                    //ImGui.SetCursorPos(bottomPartTextPosition);
-                    //ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
-                    //ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
-                    //ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
-                    //ImGui.Button("", bottomPartTextSize);
-                    //ImGui.PopStyleColor(3);
+                    ImGui.SetCursorPos(bottomPartTextPosition);
+                    ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
+                    ImGui.Button("", bottomPartTextSize);
+                    ImGui.PopStyleColor(3);
 
-                    //ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, -3));
-                    //ImGui.TextColored(new Vector4(0, 0, 0, 1), indexString);
+                    ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, -3));
+                    ImGui.TextColored(new Vector4(0, 0, 0, 1), indexString);
 
                     ImGui.SetWindowFontScale(3f);
                     var textSize = ImGui.CalcTextSize(text);
