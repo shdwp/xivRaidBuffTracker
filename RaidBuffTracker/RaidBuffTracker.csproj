@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>shdwp, Iaotle</Authors>
     <Company></Company>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.1.0</Version>
     <Description>Tracks Raid Buffs for you in a convenient widget.</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/shdwp/xivRaidBuffTracker</PackageProjectUrl>
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.7" />
+    <PackageReference Include="DalamudPackager" Version="2.1.6" />
     <PackageReference Include="Ninject" Version="4.0.0-beta-0134" />
     <Reference Include="FFXIVClientStructs">
       <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>

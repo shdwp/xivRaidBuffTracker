@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Dalamud.Data;
@@ -43,9 +43,9 @@ namespace RaidBuffTracker.Tracker.Source
                 return;
             }
 
-            if (opcode is 0x35E or 0x301 or 0x2BA)
+            // 0x21B 0x28F are both for player, 0x30E is for other people
+            if (opcode is 0x21B or 0x28F or 0x30E)
             {
-
                 ProcessAbilityPacket(dataptr, targetactorid);
             }
         }
