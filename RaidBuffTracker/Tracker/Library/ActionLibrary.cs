@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Data;
@@ -113,11 +113,12 @@ namespace RaidBuffTracker.Tracker.Library
                 Register(ActionCategory.MitigationPrimary, "Arcane Crest", 5, "10%% max HP shield");
 
                 // AST
+                Register(ActionCategory.OffensivePrimary, "Divination", 15f, "+4%%-6%% damage");
                 Register(ActionCategory.MitigationPrimary, "Collective Unconscious", 20, "-10%% incoming damage");
                 Register(ActionCategory.OffensiveSecondary, "Draw", 0f, "no hint");
 
                 // NIN
-                Register(ActionCategory.OffensivePrimary, "Trick Attack", 15f, "+5%% damage");
+                Register(ActionCategory.OffensivePrimary, "Mug", 20f, "+5%% damage");
 
                 // DRG
                 Register(ActionCategory.OffensivePrimary, "Battle Litany", 20f, "+10%% crit");
@@ -152,7 +153,6 @@ namespace RaidBuffTracker.Tracker.Library
                 Register(ActionCategory.OffensivePrimary, "Searing Light", 30f, "+3%% damage");
 
                 // SCH
-                Register(ActionCategory.OffensivePrimary, "Divination", 15f, "+4%%, +5%% or +6%% damage");
                 Register(ActionCategory.OffensivePrimary, "Chain Stratagem", 15f, "+10%% crit");
                 Register(ActionCategory.MitigationSecondary, "Fey Illumination", 20, "-5%% magical damage, +10%% healing");
 

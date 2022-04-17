@@ -14,13 +14,19 @@ namespace RaidBuffTracker.Tracker.Source
     {
         public event Action<uint, uint>? ActionInvocationDetected;
 
+
         private readonly GameNetwork _gameNetwork;
         private readonly DataManager _dataManager;
         private readonly ObjectTable _objectTable;
 
         private readonly ExcelSheet<Action> _actionSheet;
 
-        private readonly int[] _actionOpcodes = { 464, 688 };
+        private readonly int[] opcodes = {
+                //462, // PlayerStats
+                539, // Effect
+                //655, // ActorControlSelf
+                782, // UpdateSearchInfo
+            };
 
         public NetworkActionTrackerSource(GameNetwork gameNetwork, DataManager dataManager, ObjectTable objectTable)
         {
@@ -42,10 +48,19 @@ namespace RaidBuffTracker.Tracker.Source
             {
                 return;
             }
-
-            // 0x21B 0x28F are both for player, 0x30E is for other people
-            if (opcode is 0x21B or 0x28F or 0x30E)
+            if (false) // debug
             {
+                var actionId = (uint)Marshal.ReadInt32(dataptr, 0x8);
+                if (actionId is 16552 or 3557 or 25801 or 118 or 15998 or 16004 or 2248)
+                {
+                    PluginLog.Warning("opcode: {x}, actionId: {y}", opcode, actionId);
+                }
+            }
+
+            if (opcodes.Contains(opcode))
+            {
+                //var actionId = (uint)Marshal.ReadInt32(dataptr, 0x8);
+                //PluginLog.Warning("opcode: {x}, actionId: {y}", opcode, actionId);
                 ProcessAbilityPacket(dataptr, targetactorid);
             }
         }

@@ -1,4 +1,4 @@
-﻿using RaidBuffTracker.Tracker.Track;
+using RaidBuffTracker.Tracker.Track;
 
 namespace RaidBuffTracker.Tracker.Library
 {
@@ -26,7 +26,8 @@ namespace RaidBuffTracker.Tracker.Library
 
         public bool IsApplicableToSource(ActionTrackSource source)
         {
-            return jobAffinity.Contains(source.jobAbbr);
+            //PluginLog.Warning("job affin {x}, minlvl {y}, source.lvl {z}", jobAffinity, minLvl, source.lvl);
+            return jobAffinity.Contains(source.jobAbbr) && source.lvl >= minLvl;
             // return source.lvl >= minLvl && jobAffinity.Contains(source.jobAbbr);
         }
     }

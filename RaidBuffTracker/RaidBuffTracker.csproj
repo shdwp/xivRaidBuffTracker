@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>shdwp, Iaotle</Authors>
     <Company></Company>
-    <Version>1.0.1.0</Version>
+    <Version>1.0.2.0</Version>
     <Description>Tracks Raid Buffs for you in a convenient widget.</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/shdwp/xivRaidBuffTracker</PackageProjectUrl>

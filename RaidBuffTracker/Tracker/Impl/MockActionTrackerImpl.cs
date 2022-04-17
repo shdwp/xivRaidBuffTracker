@@ -78,7 +78,7 @@ namespace RaidBuffTracker.Tracker.Impl
             };
 
             _activeTrack = _actionLibrary.InstantiateTrack(drg, _actionLibrary.FindRecord("Battle Litany"));
-            _readyTrack = _actionLibrary.InstantiateTrack(nin, _actionLibrary.FindRecord("Trick Attack"));
+            _readyTrack = _actionLibrary.InstantiateTrack(nin, _actionLibrary.FindRecord("Mug"));
             _cooldownTrack = _actionLibrary.InstantiateTrack(brd, _actionLibrary.FindRecord("Battle Voice"));
             _activeTrack2 = _actionLibrary.InstantiateTrack(brd, _actionLibrary.FindRecord("Mage's Ballad"));
             _readyTrack2 = _actionLibrary.InstantiateTrack(sam, _actionLibrary.FindRecord("Feint"));
