@@ -113,6 +113,16 @@ namespace RaidBuffTracker.UI
             }
             ImGuiHelpTooltip("Each of the category will start on the separate row.");
 
+            var widgetIcons = _configuration.WidgetIcons;
+            if (ImGui.Checkbox("Widget icons##widget_icons", ref widgetIcons))
+            {
+                _configuration.WidgetIcons = widgetIcons;
+                SaveConfiguration();
+            }
+            ImGuiHelpTooltip("Enables widget icons, such as job and player numbers.");
+
+
+
             var reverseOrder = _configuration.WidgetReverseOrder;
             if (ImGui.Checkbox("Reverse sorting order##reverse_sorting_order", ref reverseOrder))
             {

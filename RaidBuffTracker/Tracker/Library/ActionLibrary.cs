@@ -75,7 +75,7 @@ namespace RaidBuffTracker.Tracker.Library
         {
             foreach (var record in _db)
             {
-                var source = playerCharacter.ToActionTrackSource(1);
+                var source = playerCharacter.ToActionTrackSource(2);
                 if (record.IsApplicableToSource(source))
                 {
                     yield return new ActionTrack(source, record);

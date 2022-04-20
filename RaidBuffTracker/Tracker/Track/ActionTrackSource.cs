@@ -16,19 +16,11 @@ namespace RaidBuffTracker.Tracker.Track
 
     public static class SourceExtensions
     {
-        public static ActionTrackSource ToActionTrackSource(this PartyMember member, uint index)
+        public static ActionTrackSource? ToActionTrackSource(this PartyMember member, uint index)
         {
-            if (member.ClassJob.GameData == null)
+            if (member == null)
             {
-                return new ActionTrackSource
-                {
-                    index = index,
-                    objectId = member.ObjectId,
-                    name = member.Name.ToString(),
-                    jobId = member.ClassJob.Id,
-                    jobAbbr = "",
-                    lvl = member.Level,
-                };
+                return null;
             }
             return new ActionTrackSource
             {
@@ -41,19 +33,11 @@ namespace RaidBuffTracker.Tracker.Track
             };
         }
 
-        public static ActionTrackSource ToActionTrackSource(this PlayerCharacter character, uint index)
+        public static ActionTrackSource? ToActionTrackSource(this PlayerCharacter character, uint index)
         {
-            if (character.ClassJob.GameData == null)
+            if (character == null)
             {
-                return new ActionTrackSource
-                {
-                    index = index,
-                    objectId = character.ObjectId,
-                    name = character.Name.ToString(),
-                    jobId = character.ClassJob.Id,
-                    jobAbbr = "",
-                    lvl = character.Level,
-                };
+                return null;
             }
             return new ActionTrackSource
             {

@@ -148,28 +148,35 @@ namespace RaidBuffTracker.UI
                         ImGui.SetTooltip(track.record.name + "\n" + track.source.name + " - " + track.record.category + "\n" + track.record.tooltip);
                     }
 
-                    var indexString = track.source.index.ToString();
-                    var bottomPartTextSize = new Vector2(_jobIconSize.X - 15, _jobIconSize.Y - 10);
-                    var bottomPartSize = new Vector2(_jobIconSize.X + bottomPartTextSize.X, _jobIconSize.Y);
 
-                    ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
-                    ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
+                    if (_configuration.WidgetIcons)
+                    {
 
-                    var bottomPartTextPosition = currentPosition + new Vector2(
-                                                     cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
-                                                     cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
+                        var indexString = (track.source.index - 1).ToString(); // indexes go up to 9 for some reason
+                        var bottomPartTextSize = new Vector2(_jobIconSize.X - 15, _jobIconSize.Y - 10);
+                        var bottomPartSize = new Vector2(_jobIconSize.X + bottomPartTextSize.X, _jobIconSize.Y);
 
-                    ImGui.SetCursorPos(bottomPartTextPosition);
-                    ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
-                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
-                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
-                    ImGui.Button("", bottomPartTextSize);
-                    ImGui.PopStyleColor(3);
+                        ImGui.SetCursorPos(currentPosition + new Vector2(cellSize.X / 2 - bottomPartSize.X / 2, cellSize.Y - bottomPartSize.Y / 2));
+                        ImGui.Image(jobIcon.ImGuiHandle, _jobIconSize);
 
-                    ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, -3));
-                    ImGui.TextColored(new Vector4(0, 0, 0, 1), indexString);
+                        var bottomPartTextPosition = currentPosition + new Vector2(
+                                                         cellSize.X / 2 - bottomPartSize.X / 2 + _jobIconSize.X,
+                                                         cellSize.Y - bottomPartSize.Y / 2 + (_jobIconSize.Y - bottomPartTextSize.Y) / 2);
+
+                        ImGui.SetCursorPos(bottomPartTextPosition);
+                        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 1));
+                        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0, 0, 0, 1));
+                        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0, 0, 0, 1));
+                        ImGui.Button("", bottomPartTextSize);
+                        ImGui.PopStyleColor(3);
+
+                        ImGui.SetWindowFontScale(1.5f);
+                        ImGui.SetCursorPos(bottomPartTextPosition + new Vector2(6, 3));
+                        ImGui.TextColored(new Vector4(1, 1, 1, 1), indexString);
+                    }
 
                     ImGui.SetWindowFontScale(3f);
+
                     var textSize = ImGui.CalcTextSize(text);
                     ImGui.SetCursorPos(currentPosition + cellSize / 2 - textSize / 2);
                     DrawTextWithShadow(textColor, text, _shadowColor, _shadowOffset);

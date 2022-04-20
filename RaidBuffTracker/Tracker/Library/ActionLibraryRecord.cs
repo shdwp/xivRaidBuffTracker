@@ -1,5 +1,5 @@
-using RaidBuffTracker.Tracker.Track;
-
+﻿using RaidBuffTracker.Tracker.Track;
+using Dalamud.Logging;
 namespace RaidBuffTracker.Tracker.Library
 {
     public struct ActionLibraryRecord
@@ -24,10 +24,12 @@ namespace RaidBuffTracker.Tracker.Library
             return $"LibraryRecord {name}(actionId={actionId})";
         }
 
-        public bool IsApplicableToSource(ActionTrackSource source)
+        public bool IsApplicableToSource(ActionTrackSource? source)
         {
+            if (source == null) return false;
+            var notnull_source = (ActionTrackSource) source;
             //PluginLog.Warning("job affin {x}, minlvl {y}, source.lvl {z}", jobAffinity, minLvl, source.lvl);
-            return jobAffinity.Contains(source.jobAbbr) && source.lvl >= minLvl;
+            return jobAffinity.Contains(notnull_source.jobAbbr) && notnull_source.lvl >= minLvl;
             // return source.lvl >= minLvl && jobAffinity.Contains(source.jobAbbr);
         }
     }

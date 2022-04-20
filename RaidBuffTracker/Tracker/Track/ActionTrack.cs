@@ -19,9 +19,10 @@ namespace RaidBuffTracker.Tracker.Track
         public double DurationRemaining => lastActivated + record.duration - DateTime.Now.TimestampSeconds();
         public double CooldownRemaining => lastInvoked + record.cooldown - DateTime.Now.TimestampSeconds();
 
-        public ActionTrack(ActionTrackSource source, ActionLibraryRecord @record)
+        public ActionTrack(ActionTrackSource? source, ActionLibraryRecord @record)
         {
-            this.source = source;
+            if (source != null)
+                this.source = (ActionTrackSource) source;
             this.record = record;
         }
 

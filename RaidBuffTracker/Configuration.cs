@@ -16,8 +16,9 @@ namespace RaidBuffTracker
         public bool    WidgetSplitIntoCategories { get; set; } = false;
         public bool    WidgetReverseOrder        { get; set; } = false;
         public bool    WidgetInteraction         { get; set; } = true;
+        public bool    WidgetIcons               { get; set; } = false;
+        public bool    OnlyInInstances           { get; set; }
 
-        public bool          OnlyInInstances { get; set; }
         public List<string>? EnabledActions  { get; set; }
     }
 }
