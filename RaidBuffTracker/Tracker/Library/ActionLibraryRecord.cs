@@ -27,9 +27,8 @@ namespace RaidBuffTracker.Tracker.Library
         public bool IsApplicableToSource(ActionTrackSource? source)
         {
             if (source == null) return false;
-            var notnull_source = (ActionTrackSource) source;
             //PluginLog.Warning("job affin {x}, minlvl {y}, source.lvl {z}", jobAffinity, minLvl, source.lvl);
-            return jobAffinity.Contains(notnull_source.jobAbbr) && notnull_source.lvl >= minLvl;
+            return jobAffinity.Contains(source.Value.jobAbbr) && source.Value.lvl >= minLvl;
             // return source.lvl >= minLvl && jobAffinity.Contains(source.jobAbbr);
         }
     }

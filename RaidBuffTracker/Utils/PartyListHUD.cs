@@ -21,7 +21,7 @@ namespace RaidBuffTracker.Utils
             var result = new List<uint>();
             for (var i = 0; i < hud->PartyMemberCount; i++)
             {
-                result.Add(list[i].ObjectId);
+                //result.Add(list[i].ObjectId);
             }
 
             return result;
