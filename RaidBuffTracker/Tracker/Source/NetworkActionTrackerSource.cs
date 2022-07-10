@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Dalamud.Data;
 using Dalamud.Game.ClientState.Objects;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Network;
 using Dalamud.Logging;
 using Lumina.Excel;
+using Newtonsoft.Json;
 using Action = Lumina.Excel.GeneratedSheets.Action;
 
 namespace RaidBuffTracker.Tracker.Source
@@ -13,6 +18,9 @@ namespace RaidBuffTracker.Tracker.Source
     public sealed class NetworkActionTrackerSource : IActionTrackerSource, IDisposable
     {
         public event Action<uint, uint>? ActionInvocationDetected;
+        public event Action<uint>? ActorZoningDetected;
+
+        private const string OpcodesUrl = "https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json";
 
         private readonly GameNetwork _gameNetwork;
         private readonly DataManager _dataManager;
@@ -20,7 +28,8 @@ namespace RaidBuffTracker.Tracker.Source
 
         private readonly ExcelSheet<Action> _actionSheet;
 
-        private readonly int[] _actionOpcodes = { 464, 688 };
+        private readonly List<int> _actionEffectOpcodes = new();
+        private readonly List<int> _prepareZoningOpcodes = new();
 
         public NetworkActionTrackerSource(GameNetwork gameNetwork, DataManager dataManager, ObjectTable objectTable)
         {
@@ -30,6 +39,8 @@ namespace RaidBuffTracker.Tracker.Source
             _gameNetwork.NetworkMessage += OnNetworkMessage;
 
             _actionSheet = _dataManager.GameData.GetExcelSheet<Action>();
+
+            Task.WaitAll(Initialize());
         }
 
         public void Dispose()
@@ -37,44 +48,82 @@ namespace RaidBuffTracker.Tracker.Source
             _gameNetwork.NetworkMessage -= OnNetworkMessage;
         }
 
-        private void OnNetworkMessage(IntPtr dataptr, ushort opcode, uint sourceactorid, uint targetactorid, NetworkMessageDirection direction)
+        private async Task Initialize()
+        {
+            PluginLog.Debug("Downloading opcodes");
+            var client = new HttpClient();
+            var data = await client.GetStringAsync(OpcodesUrl);
+            dynamic json = JsonConvert.DeserializeObject(data);
+
+            foreach (var clientType in json)
+            {
+                if (clientType.region == "Global")
+                {
+                    foreach (var record in clientType["lists"]["ServerZoneIpcType"])
+                    {
+                        var name = record.name.ToString();
+                        var opcode = (int)record.opcode;
+                        if (name == "PrepareZoning")
+                        {
+                            _prepareZoningOpcodes.Add(opcode);
+                            PluginLog.Debug($"Adding zoning opcode - {record.name} ({record.opcode})");
+                        }
+                        else if (name.StartsWith("AoeEffect") || name == "Effect")
+                        {
+                            _actionEffectOpcodes.Add(opcode);
+                            PluginLog.Debug($"Adding action effect opcode - {record.name} ({record.opcode})");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnNetworkMessage(IntPtr dataptr, ushort opcode, uint sourceactorid, uint targetactorid,
+            NetworkMessageDirection direction)
         {
             if (direction != NetworkMessageDirection.ZoneDown)
             {
                 return;
             }
 
-            if (opcode == 0x1d0 || opcode == 0x2b0 || opcode == 0x2be || opcode == 0x288 || opcode == 0x238)
+            if (_actionEffectOpcodes.Contains(opcode))
             {
-                ProcessAbilityPacket(dataptr, targetactorid);
+                ProcessActionPacket(dataptr, opcode, targetactorid);
+            }
+            else if (_prepareZoningOpcodes.Contains(opcode))
+            {
+                ProcessZoningPacket(dataptr, targetactorid);
             }
         }
 
-        private void ProcessAbilityPacket(IntPtr dataPtr, uint actorId)
+        private void ProcessActionPacket(IntPtr dataPtr, ushort opcode, uint actorId)
         {
-            var actionId = (uint)Marshal.ReadInt32(dataPtr, 0x8);
-
-            if (false)
+            ushort actionId = (ushort)Marshal.ReadInt16(dataPtr, 28);
+            uint oldPositionActionID = (uint)Marshal.ReadInt32(dataPtr, 8);
+            Action action = _actionSheet.GetRow(actionId);
+            Action oldAction = _actionSheet.GetRow(oldPositionActionID);
+            GameObject actor = _objectTable.FirstOrDefault(o => o.ObjectId == actorId);
+            bool flag = actionId != oldPositionActionID;
+            if (flag)
             {
-                var action = _actionSheet.GetRow(actionId);
-                var actor = _objectTable.FirstOrDefault(o => o.ObjectId == actorId);
-
-                PluginLog.Warning($"ACTION USE: {actor?.Name}/{action?.Name}");
+                PluginLog.Warning(
+                    string.Format("[{0}] Action IDs of {1} mismatch: {2} ({3}) != {4} ({5})", opcode, (actor != null) ? actor.Name : null, actionId,
+                        (action != null) ? action.Name : null, oldPositionActionID, (oldAction != null) ? oldAction.Name : null), Array.Empty<object>());
             }
 
-            ActionInvocationDetected?.Invoke(actorId, actionId);
+            Action<uint, uint> actionInvocationDetected = ActionInvocationDetected;
+            if (actionInvocationDetected != null)
+            {
+                actionInvocationDetected(actorId, actionId);
+            }
         }
 
-        private void ProcessCastPacket(IntPtr dataPtr, uint actorId)
+        private void ProcessZoningPacket(IntPtr dataPtr, uint actorId)
         {
-            var actionId = (uint)Marshal.ReadInt16(dataPtr, 0x0);
-
-            if (true)
+            Action<uint> actorZoningDetected = ActorZoningDetected;
+            if (actorZoningDetected != null)
             {
-                var action = _actionSheet.GetRow(actionId);
-                var actor = _objectTable.FirstOrDefault(o => o.ObjectId == actorId);
-
-                PluginLog.Warning($"CAST USE: {actor?.Name}/{action?.Name} ({actionId})");
+                actorZoningDetected(actorId);
             }
         }
     }

@@ -68,7 +68,7 @@ namespace RaidBuffTracker
             _commandManager.AddHandler(commandName, new CommandInfo(OnCommand));
             _pluginInterface.UiBuilder.Draw += OnUIDraw;
             _gameNetwork.NetworkMessage += OnNetworkMessage;
-            _actionSheet = dataManager.GameData.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>();
+            _actionSheet = dataManager.GameData.GetExcelSheet<Action>();
 
             Module.shared.Inject(_configurationWindow);
 
@@ -106,7 +106,7 @@ namespace RaidBuffTracker
                     var nameNode = partyMember.Name;
                     var slot = partyMember.GroupSlotIndicator;
 
-                    _chatGui.Print(slot->NodeText.ToString() + nameNode->NodeText.ToString());
+                    _chatGui.Print(slot->NodeText + nameNode->NodeText.ToString());
                 }
 
                 var hud = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentHUD();

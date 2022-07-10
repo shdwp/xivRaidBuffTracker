@@ -5,5 +5,6 @@ namespace RaidBuffTracker.Tracker.Source
     public interface IActionTrackerSource
     {
         public event Action<uint, uint> ActionInvocationDetected;
+        event Action<uint>? ActorZoningDetected;
     }
 }

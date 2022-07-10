@@ -55,16 +55,14 @@ namespace RaidBuffTracker.UI
             }
         }
 
-        public TextureWrap GetRecordIcon(ActionLibraryRecord @record)
+        public TextureWrap GetRecordIcon(ActionLibraryRecord record)
         {
             if (_recordIcons.TryGetValue(record.name, out var icon))
             {
                 return icon;
             }
-            else
-            {
-                return _fallbackIcon;
-            }
+
+            return _fallbackIcon;
         }
 
         public TextureWrap GetJobIcon(uint jobId)
@@ -73,10 +71,8 @@ namespace RaidBuffTracker.UI
             {
                 return icon;
             }
-            else
-            {
-                return _fallbackIcon;
-            }
+
+            return _fallbackIcon;
         }
 
         private void LoadRecordIcon(ActionLibraryRecord record)
