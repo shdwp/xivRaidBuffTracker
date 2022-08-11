@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Dalamud.Data;
+using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Network;
@@ -24,6 +25,7 @@ namespace RaidBuffTracker.Tracker.Source
 
         private readonly GameNetwork _gameNetwork;
         private readonly DataManager _dataManager;
+        private readonly ClientState _clientState;
         private readonly ObjectTable _objectTable;
 
         private readonly ExcelSheet<Action> _actionSheet;
@@ -62,13 +64,14 @@ namespace RaidBuffTracker.Tracker.Source
                     foreach (var record in clientType["lists"]["ServerZoneIpcType"])
                     {
                         var name = record.name.ToString();
+                        
                         var opcode = (int)record.opcode;
                         if (name == "PrepareZoning")
                         {
                             _prepareZoningOpcodes.Add(opcode);
                             PluginLog.Debug($"Adding zoning opcode - {record.name} ({record.opcode})");
                         }
-                        else if (name.StartsWith("AoeEffect") || name == "Effect")
+                        else if (name == "Effect" || name.StartsWith("AoeEffect"))
                         {
                             _actionEffectOpcodes.Add(opcode);
                             PluginLog.Debug($"Adding action effect opcode - {record.name} ({record.opcode})");

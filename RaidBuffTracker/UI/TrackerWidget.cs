@@ -198,9 +198,9 @@ public sealed class TrackerWidget : IDisposable
                                     _cellSize.Y - bottomPartSize.Y / 2f +
                                     (jobIconSize.Y - bottomPartTextSize.Y) / 2f));
                             ImGui.SetCursorPos(bottomPartTextPosition);
-                            ImGui.PushStyleColor(21, ImGuiColors.DalamudWhite);
-                            ImGui.PushStyleColor(22, ImGuiColors.DalamudWhite);
-                            ImGui.PushStyleColor(23, ImGuiColors.DalamudWhite);
+                            ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudWhite);
+                            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudWhite);
+                            ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudWhite);
                             ImGui.Button("", bottomPartTextSize);
                             ImGui.PopStyleColor(3);
                             Vector2 indexSize = ImGui.CalcTextSize(indexString);
